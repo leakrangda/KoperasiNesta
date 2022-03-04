@@ -2,6 +2,7 @@ import mysql.connector as mconnect
 import csv
 from mysql.connector.errors import Error
 import openpyxl
+from itertools import repeat
 from ObjectData import *
 
 class Koperasi():
@@ -33,7 +34,7 @@ class Koperasi():
         except Exception as e:
             print("error konek database:",e)
     
-    def insert(self):
+    def insertSiswa(self):
         kelas=None
         kelamin=None
 
@@ -96,7 +97,7 @@ class Koperasi():
             print("error buka file")
         return self.data 
 
-    def transaksi(self):
+    def insertTransaksi(self):
         sql = "insert into transaksi values(default, '{0}', '{1}', '{2}', '{3}')"
         for i in self.data:
             try:
@@ -104,7 +105,6 @@ class Koperasi():
                 nisn=self.kursor.fetchone()
                 if nisn:
                     print(sql.format(i[5],i[7],nisn[0],5000))
-                    #tgl,bln,thn=i[5].split(sep="/")
                     t= i[7]
                     d = i[5]
                     self.kursor.execute(sql.format(d, t, nisn[0], 5000))
@@ -113,7 +113,56 @@ class Koperasi():
             except Error as e:
                 print("error insertion:", e)
         self.koneksi.commit()
-    
+
+    def insertBarang(self):
+        sql = "insert into barang values(default, '{0}', '{1}','{2}', '{3}')"
+        lstGender = []
+        def retGender(gen:Gender, kel:str):
+            if Gender.jenis_gender.lower() == kel.lower():
+                return True
+            else:
+                return False 
+        
+        for i in self.data:
+            try:
+                self.kursor.execute("select * from gender")
+                if any(self.kursor):
+                    for i in self.kursor:
+                        lstGender.append(Gender(*i))
+                    #self.kuror.execute(sql.format(i[1], \
+                    #    lstGender[ \
+                    #        map(retGender, lstGender, repeat(i[2]).index(True))]), i[3], i[4])
+                    print(lstGender)
+                else:
+                    print("data gender tidak ada, isi dulu!")
+            except Exception:
+                print("ada error!")
+
+    def insertDetail(self):
+        pass
+
+    def insertAdmin(self):
+        pass
+
+    def insertGender(self):
+        pass
+
+    def insertJurusan(self):
+        pass
+
+    def insertKelas(self):
+        pass
+
+    def insertKeterangan(self):
+        pass
+
+    def insertPembayaran(self):
+        pass
+
+    def insertPengambilan(self):
+        pass
+
+
     def file_cheker(self, file):
         return file.split('.')[-1]
 
